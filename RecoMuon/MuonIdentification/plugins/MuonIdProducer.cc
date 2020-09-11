@@ -873,15 +873,15 @@ void MuonIdProducer::fillMuonId(edm::Event& iEvent,
     const auto& localError = lErr.positionError();
     matchedChamber.x = lPos.x();
     matchedChamber.y = lPos.y();
-    matchedChamber.xErr = sqrt(localError.xx());
-    matchedChamber.yErr = sqrt(localError.yy());
+    matchedChamber.xErr2 = localError.xx();
+    matchedChamber.yErr2 = localError.yy();
 
     matchedChamber.dXdZ = lDir.z() != 0 ? lDir.x() / lDir.z() : 9999;
     matchedChamber.dYdZ = lDir.z() != 0 ? lDir.y() / lDir.z() : 9999;
     // DANGEROUS - compiler cannot guaranty parameters ordering
     AlgebraicSymMatrix55 trajectoryCovMatrix = lErr.matrix();
-    matchedChamber.dXdZErr = trajectoryCovMatrix(1, 1) > 0 ? sqrt(trajectoryCovMatrix(1, 1)) : 0;
-    matchedChamber.dYdZErr = trajectoryCovMatrix(2, 2) > 0 ? sqrt(trajectoryCovMatrix(2, 2)) : 0;
+    matchedChamber.dXdZErr2 = trajectoryCovMatrix(1, 1) > 0 ? trajectoryCovMatrix(1, 1) : 0;
+    matchedChamber.dYdZErr2 = trajectoryCovMatrix(2, 2) > 0 ? trajectoryCovMatrix(2, 2) : 0;
 
     matchedChamber.edgeX = chamber.localDistanceX;
     matchedChamber.edgeY = chamber.localDistanceY;
@@ -906,10 +906,10 @@ void MuonIdProducer::fillMuonId(edm::Event& iEvent,
           segment.segmentLocalDirection.z() ? segment.segmentLocalDirection.x() / segment.segmentLocalDirection.z() : 0;
       matchedSegment.dYdZ =
           segment.segmentLocalDirection.z() ? segment.segmentLocalDirection.y() / segment.segmentLocalDirection.z() : 0;
-      matchedSegment.xErr = segment.segmentLocalErrorXX > 0 ? sqrt(segment.segmentLocalErrorXX) : 0;
-      matchedSegment.yErr = segment.segmentLocalErrorYY > 0 ? sqrt(segment.segmentLocalErrorYY) : 0;
-      matchedSegment.dXdZErr = segment.segmentLocalErrorDxDz > 0 ? sqrt(segment.segmentLocalErrorDxDz) : 0;
-      matchedSegment.dYdZErr = segment.segmentLocalErrorDyDz > 0 ? sqrt(segment.segmentLocalErrorDyDz) : 0;
+      matchedSegment.xErr2 = segment.segmentLocalErrorXX > 0 ? segment.segmentLocalErrorXX : 0;
+      matchedSegment.yErr2 = segment.segmentLocalErrorYY > 0 ? segment.segmentLocalErrorYY : 0;
+      matchedSegment.dXdZErr2 = segment.segmentLocalErrorDxDz > 0 ? segment.segmentLocalErrorDxDz : 0;
+      matchedSegment.dYdZErr2 = segment.segmentLocalErrorDyDz > 0 ? segment.segmentLocalErrorDyDz : 0;
       matchedSegment.t0 = segment.t0;
       matchedSegment.mask = 0;
       matchedSegment.dtSegmentRef = segment.dtSegmentRef;
@@ -927,26 +927,23 @@ void MuonIdProducer::fillMuonId(edm::Event& iEvent,
                                      << ", chamber y: " << matchedChamber.y << ", max: " << maxAbsDy_;
       const double matchedSegChDx = std::abs(matchedSegment.x - matchedChamber.x);
       const double matchedSegChDy = std::abs(matchedSegment.y - matchedChamber.y);
-      if (matchedSegment.xErr > 0 && matchedChamber.xErr > 0)
+      if (matchedSegment.xErr2 > 0 && matchedChamber.xErr2 > 0)
         LogTrace("MuonIdentification") << " xpull: "
-                                       << matchedSegChDx / std::sqrt(std::pow(matchedSegment.xErr, 2) +
-                                                                     std::pow(matchedChamber.xErr, 2));
-      if (matchedSegment.yErr > 0 && matchedChamber.yErr > 0)
+                                       << matchedSegChDx / std::sqrt(matchedSegment.xErr2 + matchedChamber.xErr2);
+      if (matchedSegment.yErr2 > 0 && matchedChamber.yErr2 > 0)
         LogTrace("MuonIdentification") << " ypull: "
-                                       << matchedSegChDy / std::sqrt(std::pow(matchedSegment.yErr, 2) +
-                                                                     std::pow(matchedChamber.yErr, 2));
-
+                                       << matchedSegChDy / std::sqrt(matchedSegment.yErr2 + matchedChamber.yErr2);
       if (matchedSegChDx < maxAbsDx_)
         matchedX = true;
-      else if (matchedSegment.xErr > 0 && matchedChamber.xErr > 0) {
-        const double invMatchedSegChPullX2 = std::pow(matchedSegment.xErr, 2) + std::pow(matchedChamber.xErr, 2);
+      else if (matchedSegment.xErr2 > 0 && matchedChamber.xErr2 > 0) {
+        const double invMatchedSegChPullX2 = matchedSegment.xErr2 + matchedChamber.xErr2;
         if (matchedSegChDx * matchedSegChDx < maxAbsPullX2_ * invMatchedSegChPullX2)
           matchedX = true;
       }
       if (matchedSegChDy < maxAbsDy_)
         matchedY = true;
-      else if (matchedSegment.yErr > 0 && matchedChamber.yErr > 0) {
-        const double invMatchedSegChPullY2 = std::pow(matchedSegment.yErr, 2) + std::pow(matchedChamber.yErr, 2);
+      else if (matchedSegment.yErr2 > 0 && matchedChamber.yErr2 > 0) {
+        const double invMatchedSegChPullY2 = matchedSegment.yErr2 + matchedChamber.yErr2;
         if (matchedSegChDy * matchedSegChDy < maxAbsPullY2_ * invMatchedSegChPullY2)
           matchedY = true;
       }
@@ -977,15 +974,15 @@ void MuonIdProducer::fillMuonId(edm::Event& iEvent,
       LocalError localError = lErr.positionError();
       matchedChamber.x = lPos.x();
       matchedChamber.y = lPos.y();
-      matchedChamber.xErr = sqrt(localError.xx());
-      matchedChamber.yErr = sqrt(localError.yy());
+      matchedChamber.xErr2 = localError.xx();
+      matchedChamber.yErr2 = localError.yy();
 
       matchedChamber.dXdZ = lDir.z() != 0 ? lDir.x() / lDir.z() : 9999;
       matchedChamber.dYdZ = lDir.z() != 0 ? lDir.y() / lDir.z() : 9999;
       // DANGEROUS - compiler cannot guaranty parameters ordering
       AlgebraicSymMatrix55 trajectoryCovMatrix = lErr.matrix();
-      matchedChamber.dXdZErr = trajectoryCovMatrix(1, 1) > 0 ? sqrt(trajectoryCovMatrix(1, 1)) : 0;
-      matchedChamber.dYdZErr = trajectoryCovMatrix(2, 2) > 0 ? sqrt(trajectoryCovMatrix(2, 2)) : 0;
+      matchedChamber.dXdZErr2 = trajectoryCovMatrix(1, 1) > 0 ? trajectoryCovMatrix(1, 1) : 0;
+      matchedChamber.dYdZErr2 = trajectoryCovMatrix(2, 2) > 0 ? trajectoryCovMatrix(2, 2) : 0;
 
       matchedChamber.edgeX = chamber.localDistanceX;
       matchedChamber.edgeY = chamber.localDistanceY;
@@ -1096,9 +1093,9 @@ void MuonIdProducer::fillArbitrationInfo(reco::MuonCollection* pOutputMuons, uns
                     continue;  // has already been arbitrated
                   if (approxEqual(segment2.x, segment1.x) && approxEqual(segment2.y, segment1.y) &&
                       approxEqual(segment2.dXdZ, segment1.dXdZ) && approxEqual(segment2.dYdZ, segment1.dYdZ) &&
-                      approxEqual(segment2.xErr, segment1.xErr) && approxEqual(segment2.yErr, segment1.yErr) &&
-                      approxEqual(segment2.dXdZErr, segment1.dXdZErr) &&
-                      approxEqual(segment2.dYdZErr, segment1.dYdZErr)) {
+                      approxEqual(segment2.xErr2, segment1.xErr2) && approxEqual(segment2.yErr2, segment1.yErr2) &&
+                      approxEqual(segment2.dXdZErr2, segment1.dXdZErr2) &&
+                      approxEqual(segment2.dYdZErr2, segment1.dYdZErr2)) {
                     arbitrationPairs.push_back(std::make_pair(&chamber2, &segment2));
                   }
                 }  // segmentIter2
@@ -1307,7 +1304,8 @@ void MuonIdProducer::fillMuonIsolation(edm::Event& iEvent,
 }
 
 reco::Muon MuonIdProducer::makeMuon(const reco::Track& track) {
-  const double energy = std::sqrt(track.p() * track.p() + 0.105658369 * 0.105658369);
+  static constexpr double mu_mass2 = 0.105658369 * 0.105658369;
+  const double energy = std::sqrt(track.p() * track.p() + mu_mass2);
   const math::XYZTLorentzVector p4(track.px(), track.py(), track.pz(), energy);
   return reco::Muon(track.charge(), p4, track.vertex());
 }

@@ -209,15 +209,15 @@ void pat::PATMuonSlimmer::produce(edm::Event &iEvent, const edm::EventSetup &iSe
       for (reco::MuonChamberMatch &cmatch : mu.matches()) {
         cmatch.edgeX = MiniFloatConverter::reduceMantissaToNbitsRounding<12>(cmatch.edgeX);
         cmatch.edgeY = MiniFloatConverter::reduceMantissaToNbitsRounding<12>(cmatch.edgeY);
-        cmatch.xErr = MiniFloatConverter::reduceMantissaToNbitsRounding<12>(cmatch.xErr);
-        cmatch.yErr = MiniFloatConverter::reduceMantissaToNbitsRounding<12>(cmatch.yErr);
-        cmatch.dXdZErr = MiniFloatConverter::reduceMantissaToNbitsRounding<12>(cmatch.dXdZErr);
-        cmatch.dYdZErr = MiniFloatConverter::reduceMantissaToNbitsRounding<12>(cmatch.dYdZErr);
+        cmatch.xErr2 = MiniFloatConverter::reduceMantissaToNbitsRounding<12>(cmatch.xErr2);
+        cmatch.yErr2 = MiniFloatConverter::reduceMantissaToNbitsRounding<12>(cmatch.yErr2);
+        cmatch.dXdZErr2 = MiniFloatConverter::reduceMantissaToNbitsRounding<12>(cmatch.dXdZErr2);
+        cmatch.dYdZErr2 = MiniFloatConverter::reduceMantissaToNbitsRounding<12>(cmatch.dYdZErr2);
         for (reco::MuonSegmentMatch &smatch : cmatch.segmentMatches) {
-          smatch.xErr = MiniFloatConverter::reduceMantissaToNbitsRounding<12>(smatch.xErr);
-          smatch.yErr = MiniFloatConverter::reduceMantissaToNbitsRounding<12>(smatch.yErr);
-          smatch.dXdZErr = MiniFloatConverter::reduceMantissaToNbitsRounding<12>(smatch.dXdZErr);
-          smatch.dYdZErr = MiniFloatConverter::reduceMantissaToNbitsRounding<12>(smatch.dYdZErr);
+          smatch.xErr2 = MiniFloatConverter::reduceMantissaToNbitsRounding<12>(smatch.xErr2);
+          smatch.yErr2 = MiniFloatConverter::reduceMantissaToNbitsRounding<12>(smatch.yErr2);
+          smatch.dXdZErr2 = MiniFloatConverter::reduceMantissaToNbitsRounding<12>(smatch.dXdZErr2);
+          smatch.dYdZErr2 = MiniFloatConverter::reduceMantissaToNbitsRounding<12>(smatch.dYdZErr2);
           if (saveSegments_ && segmentsMuonSelection_(mu)) {
             if (smatch.dtSegmentRef.isNonnull())
               dtSegmentsRefs.insert(smatch.dtSegmentRef);

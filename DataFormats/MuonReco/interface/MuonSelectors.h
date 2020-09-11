@@ -183,7 +183,7 @@ namespace muon {
   // determine if station was crossed well withing active volume
   unsigned int RequiredStationMask(const reco::Muon& muon,
                                    double maxChamberDist,
-                                   double maxChamberDistPull,
+                                   double maxChamberDistPull2,
                                    reco::Muon::ArbitrationType arbitrationType);
 
   // ------------ method to return the calo compatibility for a track with matched muon info  ------------

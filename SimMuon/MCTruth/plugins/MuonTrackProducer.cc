@@ -98,17 +98,17 @@ void MuonTrackProducer::produce(edm::StreamID, edm::Event &iEvent, const edm::Ev
       float segmentY = segmentLocalPosition.y();
       float segmentdXdZ = segmentLocalDirection.x() / segmentLocalDirection.z();
       float segmentdYdZ = segmentLocalDirection.y() / segmentLocalDirection.z();
-      float segmentXerr = sqrt(segmentLocalPositionError.xx());
-      float segmentYerr = sqrt(segmentLocalPositionError.yy());
-      float segmentdXdZerr = sqrt(segmentLocalDirectionError.xx());
-      float segmentdYdZerr = sqrt(segmentLocalDirectionError.yy());
+      float segmentXerr2 = segmentLocalPositionError.xx();
+      float segmentYerr2 = segmentLocalPositionError.yy();
+      float segmentdXdZerr2 = segmentLocalDirectionError.xx();
+      float segmentdYdZerr2 = segmentLocalDirectionError.yy();
 
       edm::LogVerbatim("MuonTrackProducer")
           << "\nDT segment index :" << index_dt_segment << "\nchamber Wh:" << wheel << ",St:" << station
-          << ",Se:" << sector << "\nLocal Position (X,Y)=(" << segmentX << "," << segmentY << ") +/- (" << segmentXerr
-          << "," << segmentYerr << "), "
-          << "Local Direction (dXdZ,dYdZ)=(" << segmentdXdZ << "," << segmentdYdZ << ") +/- (" << segmentdXdZerr << ","
-          << segmentdYdZerr << ")";
+          << ",Se:" << sector << "\nLocal Position (X,Y)=(" << segmentX << "," << segmentY << ") +/- ("
+          << sqrt(segmentXerr2) << "," << sqrt(segmentYerr2) << "), "
+          << "Local Direction (dXdZ,dYdZ)=(" << segmentdXdZ << "," << segmentdYdZ << ") +/- (" << sqrt(segmentdXdZerr2)
+          << "," << sqrt(segmentdYdZerr2) << ")";
     }
 
     edm::LogVerbatim("MuonTrackProducer") << "\nThere are " << cscSegmentCollection.size() << " CSC segments.";
@@ -132,17 +132,17 @@ void MuonTrackProducer::produce(edm::StreamID, edm::Event &iEvent, const edm::Ev
       float segmentY = segmentLocalPosition.y();
       float segmentdXdZ = segmentLocalDirection.x() / segmentLocalDirection.z();
       float segmentdYdZ = segmentLocalDirection.y() / segmentLocalDirection.z();
-      float segmentXerr = sqrt(segmentLocalPositionError.xx());
-      float segmentYerr = sqrt(segmentLocalPositionError.yy());
-      float segmentdXdZerr = sqrt(segmentLocalDirectionError.xx());
-      float segmentdYdZerr = sqrt(segmentLocalDirectionError.yy());
+      float segmentXerr2 = segmentLocalPositionError.xx();
+      float segmentYerr2 = segmentLocalPositionError.yy();
+      float segmentdXdZerr2 = segmentLocalDirectionError.xx();
+      float segmentdYdZerr2 = segmentLocalDirectionError.yy();
 
       edm::LogVerbatim("MuonTrackProducer")
           << "\nCSC segment index :" << index_csc_segment << "\nchamber Endcap:" << endcap << ",St:" << station
           << ",Ri:" << ring << ",Ch:" << chamber << "\nLocal Position (X,Y)=(" << segmentX << "," << segmentY
-          << ") +/- (" << segmentXerr << "," << segmentYerr << "), "
-          << "Local Direction (dXdZ,dYdZ)=(" << segmentdXdZ << "," << segmentdYdZ << ") +/- (" << segmentdXdZerr << ","
-          << segmentdYdZerr << ")";
+          << ") +/- (" << sqrt(segmentXerr2) << "," << sqrt(segmentYerr2) << "), "
+          << "Local Direction (dXdZ,dYdZ)=(" << segmentdXdZ << "," << segmentdYdZ << ") +/- (" << sqrt(segmentdXdZerr2)
+          << "," << sqrt(segmentdYdZerr2) << ")";
     }
 
     edm::LogVerbatim("MuonTrackProducer") << "\nThere are " << muonCollectionH->size() << " reco::Muons.";
@@ -370,10 +370,10 @@ void MuonTrackProducer::produce(edm::StreamID, edm::Event &iEvent, const edm::Ev
               float segmentY = segmentMatch->y;
               float segmentdXdZ = segmentMatch->dXdZ;
               float segmentdYdZ = segmentMatch->dYdZ;
-              float segmentXerr = segmentMatch->xErr;
-              float segmentYerr = segmentMatch->yErr;
-              float segmentdXdZerr = segmentMatch->dXdZErr;
-              float segmentdYdZerr = segmentMatch->dYdZErr;
+              float segmentXerr2 = segmentMatch->xErr2;
+              float segmentYerr2 = segmentMatch->yErr2;
+              float segmentdXdZerr2 = segmentMatch->dXdZErr2;
+              float segmentdYdZerr2 = segmentMatch->dYdZErr2;
 
               CSCSegmentRef segmentCSC = segmentMatch->cscSegmentRef;
               DTRecSegment4DRef segmentDT = segmentMatch->dtSegmentRef;
@@ -388,9 +388,10 @@ void MuonTrackProducer::produce(edm::StreamID, edm::Event &iEvent, const edm::Ev
               if (subdet == MuonSubdetId::DT) {
                 edm::LogVerbatim("MuonTrackProducer")
                     << "\n\t segment index: " << index_segment << ARBITRATED << "\n\t  Local Position (X,Y)=("
-                    << segmentX << "," << segmentY << ") +/- (" << segmentXerr << "," << segmentYerr << "), "
+                    << segmentX << "," << segmentY << ") +/- (" << sqrt(segmentXerr2) << "," << sqrt(segmentYerr2)
+                    << "), "
                     << "\n\t  Local Direction (dXdZ,dYdZ)=(" << segmentdXdZ << "," << segmentdYdZ << ") +/- ("
-                    << segmentdXdZerr << "," << segmentdYdZerr << ")";
+                    << sqrt(segmentdXdZerr2) << "," << sqrt(segmentdYdZerr2) << ")";
 
                 if (!segment_arbitrated_Ok)
                   continue;
@@ -441,9 +442,10 @@ void MuonTrackProducer::produce(edm::StreamID, edm::Event &iEvent, const edm::Ev
               else if (subdet == MuonSubdetId::CSC) {
                 edm::LogVerbatim("MuonTrackProducer")
                     << "\n\t segment index: " << index_segment << ARBITRATED << "\n\t  Local Position (X,Y)=("
-                    << segmentX << "," << segmentY << ") +/- (" << segmentXerr << "," << segmentYerr << "), "
+                    << segmentX << "," << segmentY << ") +/- (" << sqrt(segmentXerr2) << "," << sqrt(segmentYerr2)
+                    << "), "
                     << "\n\t  Local Direction (dXdZ,dYdZ)=(" << segmentdXdZ << "," << segmentdYdZ << ") +/- ("
-                    << segmentdXdZerr << "," << segmentdYdZerr << ")";
+                    << sqrt(segmentdXdZerr2) << "," << sqrt(segmentdYdZerr2) << ")";
 
                 if (!segment_arbitrated_Ok)
                   continue;

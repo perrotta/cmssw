@@ -211,10 +211,10 @@ void MuonIdDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
               fabs(segmentMatch->y - segmentLocalPosition.y()) < 1E-6 &&
               fabs(segmentMatch->dXdZ - segmentLocalDirection.x() / segmentLocalDirection.z()) < 1E-6 &&
               fabs(segmentMatch->dYdZ - segmentLocalDirection.y() / segmentLocalDirection.z()) < 1E-6 &&
-              fabs(segmentMatch->xErr - sqrt(segmentLocalPositionError.xx())) < 1E-6 &&
-              fabs(segmentMatch->yErr - sqrt(segmentLocalPositionError.yy())) < 1E-6 &&
-              fabs(segmentMatch->dXdZErr - sqrt(segmentLocalDirectionError.xx())) < 1E-6 &&
-              fabs(segmentMatch->dYdZErr - sqrt(segmentLocalDirectionError.yy())) < 1E-6) {
+              fabs(segmentMatch->xErr2 - segmentLocalPositionError.xx()) < 1E-6 &&
+              fabs(segmentMatch->yErr2 - segmentLocalPositionError.yy()) < 1E-6 &&
+              fabs(segmentMatch->dXdZErr2 - segmentLocalDirectionError.xx()) < 1E-6 &&
+              fabs(segmentMatch->dYdZErr2 - segmentLocalDirectionError.yy()) < 1E-6) {
             segmentFound = true;
             break;
           }
@@ -255,10 +255,10 @@ void MuonIdDQM::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
               fabs(segmentMatch->y - segmentLocalPosition.y()) < 1E-6 &&
               fabs(segmentMatch->dXdZ - segmentLocalDirection.x() / segmentLocalDirection.z()) < 1E-6 &&
               fabs(segmentMatch->dYdZ - segmentLocalDirection.y() / segmentLocalDirection.z()) < 1E-6 &&
-              fabs(segmentMatch->xErr - sqrt(segmentLocalPositionError.xx())) < 1E-6 &&
-              fabs(segmentMatch->yErr - sqrt(segmentLocalPositionError.yy())) < 1E-6 &&
-              fabs(segmentMatch->dXdZErr - sqrt(segmentLocalDirectionError.xx())) < 1E-6 &&
-              fabs(segmentMatch->dYdZErr - sqrt(segmentLocalDirectionError.yy())) < 1E-6) {
+              fabs(segmentMatch->xErr2 - segmentLocalPositionError.xx()) < 1E-6 &&
+              fabs(segmentMatch->yErr2 - segmentLocalPositionError.yy()) < 1E-6 &&
+              fabs(segmentMatch->dXdZErr2 - segmentLocalDirectionError.xx()) < 1E-6 &&
+              fabs(segmentMatch->dYdZErr2 - segmentLocalDirectionError.yy()) < 1E-6) {
             segmentFound = true;
             break;
           }

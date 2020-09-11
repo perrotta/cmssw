@@ -41,7 +41,6 @@
 #include "DataFormats/MuonReco/interface/MuonFwd.h"
 
 #include "TrackingTools/TrackAssociator/interface/TrackDetectorAssociator.h"
-// #include "Utilities/Timing/interface/TimerStack.h"
 
 #include "RecoMuon/MuonIdentification/interface/MuonTimingFiller.h"
 #include "RecoMuon/MuonIdentification/interface/MuonCaloCompatibility.h"

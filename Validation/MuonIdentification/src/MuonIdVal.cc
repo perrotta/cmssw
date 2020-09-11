@@ -555,7 +555,7 @@ void MuonIdVal::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetup)
         }
 
         float distance = muon->trackDist(station + 1, MuonSubdetId::DT);
-        float error = muon->trackDistErr(station + 1, MuonSubdetId::DT);
+        float error = std::sqrt(muon->trackDistErr2(station + 1, MuonSubdetId::DT));
         if (error == 0)
           error = 0.000001;
 
@@ -577,7 +577,7 @@ void MuonIdVal::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetup)
              muon->pullDyDz(station + 1, MuonSubdetId::CSC, Muon::SegmentAndTrackArbitration, false));
 
         distance = muon->trackDist(station + 1, MuonSubdetId::CSC);
-        error = muon->trackDistErr(station + 1, MuonSubdetId::CSC);
+        error = std::sqrt(muon->trackDistErr2(station + 1, MuonSubdetId::CSC));
         if (error == 0)
           error = 0.000001;
 
@@ -685,10 +685,10 @@ void MuonIdVal::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetup)
               fabs(segmentMatch->y - segmentLocalPosition.y()) < 1E-6 &&
               fabs(segmentMatch->dXdZ - segmentLocalDirection.x() / segmentLocalDirection.z()) < 1E-6 &&
               fabs(segmentMatch->dYdZ - segmentLocalDirection.y() / segmentLocalDirection.z()) < 1E-6 &&
-              fabs(segmentMatch->xErr - sqrt(segmentLocalPositionError.xx())) < 1E-6 &&
-              fabs(segmentMatch->yErr - sqrt(segmentLocalPositionError.yy())) < 1E-6 &&
-              fabs(segmentMatch->dXdZErr - sqrt(segmentLocalDirectionError.xx())) < 1E-6 &&
-              fabs(segmentMatch->dYdZErr - sqrt(segmentLocalDirectionError.yy())) < 1E-6) {
+              fabs(segmentMatch->xErr2 - segmentLocalPositionError.xx()) < 1E-6 &&
+              fabs(segmentMatch->yErr2 - segmentLocalPositionError.yy()) < 1E-6 &&
+              fabs(segmentMatch->dXdZErr2 - segmentLocalDirectionError.xx()) < 1E-6 &&
+              fabs(segmentMatch->dYdZErr2 - segmentLocalDirectionError.yy()) < 1E-6) {
             segmentFound = true;
             if (segmentMatch->isMask(reco::MuonSegmentMatch::BestInStationByDR))
               segmentBestDrFound = true;
@@ -744,10 +744,10 @@ void MuonIdVal::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetup)
               fabs(segmentMatch->y - segmentLocalPosition.y()) < 1E-6 &&
               fabs(segmentMatch->dXdZ - segmentLocalDirection.x() / segmentLocalDirection.z()) < 1E-6 &&
               fabs(segmentMatch->dYdZ - segmentLocalDirection.y() / segmentLocalDirection.z()) < 1E-6 &&
-              fabs(segmentMatch->xErr - sqrt(segmentLocalPositionError.xx())) < 1E-6 &&
-              fabs(segmentMatch->yErr - sqrt(segmentLocalPositionError.yy())) < 1E-6 &&
-              fabs(segmentMatch->dXdZErr - sqrt(segmentLocalDirectionError.xx())) < 1E-6 &&
-              fabs(segmentMatch->dYdZErr - sqrt(segmentLocalDirectionError.yy())) < 1E-6) {
+              fabs(segmentMatch->xErr2 - segmentLocalPositionError.xx()) < 1E-6 &&
+              fabs(segmentMatch->yErr2 - segmentLocalPositionError.yy()) < 1E-6 &&
+              fabs(segmentMatch->dXdZErr2 - segmentLocalDirectionError.xx()) < 1E-6 &&
+              fabs(segmentMatch->dYdZErr2 - segmentLocalDirectionError.yy()) < 1E-6) {
             segmentFound = true;
             if (segmentMatch->isMask(reco::MuonSegmentMatch::BestInStationByDR))
               segmentBestDrFound = true;

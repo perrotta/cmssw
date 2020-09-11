@@ -33,12 +33,12 @@ namespace reco {
 
     float x;            // X position of the matched segment
     float y;            // Y position of the matched segment
-    float xErr;         // uncertainty in X
-    float yErr;         // uncertainty in Y
+    float xErr2;        // uncertainty in X
+    float yErr2;        // uncertainty in Y
     float dXdZ;         // dX/dZ of the matched segment
     float dYdZ;         // dY/dZ of the matched segment
-    float dXdZErr;      // uncertainty in dX/dZ
-    float dYdZErr;      // uncertainty in dY/dZ
+    float dXdZErr2;     // uncertainty in dX/dZ
+    float dYdZErr2;     // uncertainty in dY/dZ
     unsigned int mask;  // arbitration mask
     bool hasZed_;       // contains local y information (only relevant for segments in DT)
     bool hasPhi_;       // contains local x information (only relevant for segments in DT)
@@ -51,7 +51,7 @@ namespace reco {
     CSCSegmentRef cscSegmentRef;
     GEMSegmentRef gemSegmentRef;
     ME0SegmentRef me0SegmentRef;
-    MuonSegmentMatch() : x(0), y(0), xErr(0), yErr(0), dXdZ(0), dYdZ(0), dXdZErr(0), dYdZErr(0) {}
+    MuonSegmentMatch() : x(0), y(0), xErr2(0), yErr2(0), dXdZ(0), dYdZ(0), dXdZErr2(0), dYdZErr2(0) {}
 
     bool hasZed() const { return hasZed_; }
     bool hasPhi() const { return hasPhi_; }

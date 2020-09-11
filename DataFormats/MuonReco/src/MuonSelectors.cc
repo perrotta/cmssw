@@ -39,7 +39,7 @@ namespace muon {
 
 unsigned int muon::RequiredStationMask(const reco::Muon& muon,
                                        double maxChamberDist,
-                                       double maxChamberDistPull,
+                                       double maxChamberDistPull2,
                                        reco::Muon::ArbitrationType arbitrationType) {
   unsigned int theMask = 0;
 
@@ -47,7 +47,7 @@ unsigned int muon::RequiredStationMask(const reco::Muon& muon,
     for (int detectorIdx = 1; detectorIdx < 3; ++detectorIdx) {
       float dist = muon.trackDist(stationIdx, detectorIdx, arbitrationType);
       if (dist < maxChamberDist &&
-          dist < maxChamberDistPull * muon.trackDistErr(stationIdx, detectorIdx, arbitrationType))
+          dist * dist < muon.trackDistErr2(stationIdx, detectorIdx, arbitrationType) * maxChamberDistPull2)
         theMask += 1 << ((stationIdx - 1) + 4 * (detectorIdx - 1));
     }
   }
@@ -331,6 +331,9 @@ bool muon::isGoodMuon(const reco::Muon& muon,
     return false;
   bool goodMuon = false;
 
+  const float maxAbsPullX2 = maxAbsPullX * maxAbsPullX;
+  const float maxChamberDistPull2 = maxChamberDistPull * maxChamberDistPull;
+
   if (type == TMLastStation) {
     // To satisfy my own paranoia, if the user specifies that the
     // minimum number of matches is zero, then return true.
@@ -339,7 +342,7 @@ bool muon::isGoodMuon(const reco::Muon& muon,
 
     unsigned int theStationMask = muon.stationMask(arbitrationType);
     unsigned int theRequiredStationMask =
-        RequiredStationMask(muon, maxChamberDist, maxChamberDistPull, arbitrationType);
+        RequiredStationMask(muon, maxChamberDist, maxChamberDistPull2, arbitrationType);
 
     // Require that there be at least a minimum number of segments
     int numSegs = 0;
@@ -553,12 +556,12 @@ bool muon::isGoodMuon(const reco::Muon& muon,
         continue;
 
       const float trkX = chamberMatch.x;
-      const float errX = chamberMatch.xErr;
+      const float errX2 = chamberMatch.xErr2;
 
       for (const auto& rpcMatch : chamberMatch.rpcMatches) {
         const float rpcX = rpcMatch.x;
         const float dX = std::abs(rpcX - trkX);
-        if (dX < maxAbsDx or dX < maxAbsPullX * errX) {
+        if (dX < maxAbsDx or dX * dX < maxAbsPullX2 * errX2) {
           ++nMatch;
           break;
         }
@@ -576,28 +579,30 @@ bool muon::isGoodMuon(const reco::Muon& muon,
       return true;
 
     int nMatch = 0;
+    const float maxAbsPullX2 = maxAbsPullX * maxAbsPullX;
+    const float maxAbsPullY2 = maxAbsPullY * maxAbsPullY;
     for (const auto& chamberMatch : muon.matches()) {
       if (chamberMatch.detector() != MuonSubdetId::ME0)
         continue;
 
       const float trkX = chamberMatch.x;
-      const float errX2 = chamberMatch.xErr * chamberMatch.xErr;
+      const float errX2 = chamberMatch.xErr2;
       const float trkY = chamberMatch.y;
-      const float errY2 = chamberMatch.yErr * chamberMatch.yErr;
+      const float errY2 = chamberMatch.yErr2;
 
       for (const auto& segment : chamberMatch.me0Matches) {
         const float me0X = segment.x;
-        const float me0ErrX2 = segment.xErr * segment.xErr;
+        const float me0ErrX2 = segment.xErr2;
         const float me0Y = segment.y;
-        const float me0ErrY2 = segment.yErr * segment.yErr;
+        const float me0ErrY2 = segment.yErr2;
 
         const float dX = std::abs(me0X - trkX);
         const float dY = std::abs(me0Y - trkY);
         const float invPullX2 = errX2 + me0ErrX2;
         const float invPullY2 = errY2 + me0ErrY2;
 
-        if ((dX < maxAbsDx or dX < maxAbsPullX * std::sqrt(invPullX2)) and
-            (dY < maxAbsDy or dY < maxAbsPullY * std::sqrt(invPullY2))) {
+        if ((dX < maxAbsDx or dX * dX < maxAbsPullX2 * invPullX2) and
+            (dY < maxAbsDy or dY * dY < maxAbsPullY2 * invPullY2)) {
           ++nMatch;
           break;
         }
@@ -612,29 +617,30 @@ bool muon::isGoodMuon(const reco::Muon& muon,
       return true;
 
     int nMatch = 0;
+    const float maxAbsPullX2 = maxAbsPullX * maxAbsPullX;
+    const float maxAbsPullY2 = maxAbsPullY * maxAbsPullY;
     for (const auto& chamberMatch : muon.matches()) {
       if (chamberMatch.detector() != MuonSubdetId::GEM)
         continue;
 
       const float trkX = chamberMatch.x;
-      const float errX2 = chamberMatch.xErr * chamberMatch.xErr;
+      const float errX2 = chamberMatch.xErr2;
       const float trkY = chamberMatch.y;
-      const float errY2 = chamberMatch.yErr * chamberMatch.yErr;
+      const float errY2 = chamberMatch.yErr2;
 
       for (const auto& segment : chamberMatch.gemMatches) {
         const float gemX = segment.x;
-        const float gemErrX2 = segment.xErr * segment.xErr;
+        const float gemErrX2 = segment.xErr2;
         const float gemY = segment.y;
-        const float gemErrY2 = segment.yErr * segment.yErr;
+        const float gemErrY2 = segment.yErr2;
 
         const float dX = std::abs(gemX - trkX);
         const float dY = std::abs(gemY - trkY);
         const float invPullX2 = errX2 + gemErrX2;
         const float invPullY2 = errY2 + gemErrY2;
 
-        if ((dX < maxAbsDx or dX < maxAbsPullX * std::sqrt(invPullX2)) and
-            (dY < maxAbsDy or dY < maxAbsPullY * std::sqrt(invPullY2))) {
-          ++nMatch;
+        if ((dX < maxAbsDx or dX * dX < maxAbsPullX2 * invPullX2) and
+            (dY < maxAbsDy or dY * dY < maxAbsPullY2 * invPullY2)) {
           break;
         }
       }
@@ -793,6 +799,8 @@ bool muon::overlap(
   unsigned int nMatches1 = muon1.numberOfMatches(reco::Muon::SegmentAndTrackArbitration);
   unsigned int nMatches2 = muon2.numberOfMatches(reco::Muon::SegmentAndTrackArbitration);
   unsigned int betterMuon = (muon1.pt() > muon2.pt() ? 1 : 2);
+  float pullX2 = pullX * pullX;
+  float pullY2 = pullY * pullY;
   for (std::vector<reco::MuonChamberMatch>::const_iterator chamber1 = muon1.matches().begin();
        chamber1 != muon1.matches().end();
        ++chamber1)
@@ -805,8 +813,7 @@ bool muon::overlap(
       // here we know how close they are
       if (chamber1->id == chamber2->id) {
         // found the same chamber
-        if (std::abs(chamber1->x - chamber2->x) <
-            pullX * sqrt(chamber1->xErr * chamber1->xErr + chamber2->xErr * chamber2->xErr)) {
+        if (std::pow((chamber1->x - chamber2->x), 2) < pullX2 * (chamber1->xErr2 + chamber2->xErr2)) {
           if (betterMuon == 1)
             nMatches2--;
           else
@@ -815,8 +822,7 @@ bool muon::overlap(
             return true;
           continue;
         }
-        if (std::abs(chamber1->y - chamber2->y) <
-            pullY * sqrt(chamber1->yErr * chamber1->yErr + chamber2->yErr * chamber2->yErr)) {
+        if (std::pow((chamber1->y - chamber2->y), 2) < pullY2 * (chamber1->yErr2 * chamber2->yErr2)) {
           if (betterMuon == 1)
             nMatches2--;
           else
@@ -846,9 +852,9 @@ bool muon::overlap(
 
         // Now we have to make sure that both tracks are close to an edge
         // FIXME: ignored Y coordinate for now
-        if (std::abs(chamber1->edgeX) > chamber1->xErr * pullX)
+        if (std::pow((chamber1->edgeX), 2) > chamber1->xErr2 * pullX2)
           continue;
-        if (std::abs(chamber2->edgeX) > chamber2->xErr * pullX)
+        if (std::pow((chamber2->edgeX), 2) > chamber2->xErr2 * pullX2)
           continue;
         if (chamber1->x * chamber2->x < 0) {  // check if the same edge
           if (betterMuon == 1)

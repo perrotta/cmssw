@@ -396,10 +396,10 @@ namespace reco {
     float segmentY(int station, int muonSubdetId, ArbitrationType type = SegmentAndTrackArbitration) const;
     float segmentDxDz(int station, int muonSubdetId, ArbitrationType type = SegmentAndTrackArbitration) const;
     float segmentDyDz(int station, int muonSubdetId, ArbitrationType type = SegmentAndTrackArbitration) const;
-    float segmentXErr(int station, int muonSubdetId, ArbitrationType type = SegmentAndTrackArbitration) const;
-    float segmentYErr(int station, int muonSubdetId, ArbitrationType type = SegmentAndTrackArbitration) const;
-    float segmentDxDzErr(int station, int muonSubdetId, ArbitrationType type = SegmentAndTrackArbitration) const;
-    float segmentDyDzErr(int station, int muonSubdetId, ArbitrationType type = SegmentAndTrackArbitration) const;
+    float segmentXErr2(int station, int muonSubdetId, ArbitrationType type = SegmentAndTrackArbitration) const;
+    float segmentYErr2(int station, int muonSubdetId, ArbitrationType type = SegmentAndTrackArbitration) const;
+    float segmentDxDzErr2(int station, int muonSubdetId, ArbitrationType type = SegmentAndTrackArbitration) const;
+    float segmentDyDzErr2(int station, int muonSubdetId, ArbitrationType type = SegmentAndTrackArbitration) const;
     /// get track information in chamber that contains (best) segment
     /// If no segment, get track information in chamber that has the most negative distance between the track
     /// and the nearest chamber edge (the chamber with the deepest track)
@@ -410,24 +410,24 @@ namespace reco {
     float trackY(int station, int muonSubdetId, ArbitrationType type = SegmentAndTrackArbitration) const;
     float trackDxDz(int station, int muonSubdetId, ArbitrationType type = SegmentAndTrackArbitration) const;
     float trackDyDz(int station, int muonSubdetId, ArbitrationType type = SegmentAndTrackArbitration) const;
-    float trackXErr(int station, int muonSubdetId, ArbitrationType type = SegmentAndTrackArbitration) const;
-    float trackYErr(int station, int muonSubdetId, ArbitrationType type = SegmentAndTrackArbitration) const;
-    float trackDxDzErr(int station, int muonSubdetId, ArbitrationType type = SegmentAndTrackArbitration) const;
-    float trackDyDzErr(int station, int muonSubdetId, ArbitrationType type = SegmentAndTrackArbitration) const;
+    float trackXErr2(int station, int muonSubdetId, ArbitrationType type = SegmentAndTrackArbitration) const;
+    float trackYErr2(int station, int muonSubdetId, ArbitrationType type = SegmentAndTrackArbitration) const;
+    float trackDxDzErr2(int station, int muonSubdetId, ArbitrationType type = SegmentAndTrackArbitration) const;
+    float trackDyDzErr2(int station, int muonSubdetId, ArbitrationType type = SegmentAndTrackArbitration) const;
     float trackDist(int station, int muonSubdetId, ArbitrationType type = SegmentAndTrackArbitration) const;
-    float trackDistErr(int station, int muonSubdetId, ArbitrationType type = SegmentAndTrackArbitration) const;
+    float trackDistErr2(int station, int muonSubdetId, ArbitrationType type = SegmentAndTrackArbitration) const;
 
     float t0(int n = 0) {
       int i = 0;
       for (auto& chamber : muMatches_) {
-        int segmentMatchesSize = (int)chamber.segmentMatches.size();
-        if (i + segmentMatchesSize < n) {
-          i += segmentMatchesSize;
-          continue;
+        for (auto& segment : chamber.segmentMatches) {
+          if (i == n)
+            return segment.t0;
+          ++i;
         }
         return chamber.segmentMatches[n - i].t0;
       }
-      return 0;
+      return 0.f;
     }
   };
 

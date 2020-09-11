@@ -31,9 +31,9 @@ void MuonTrackDT13ChamberResidual::setSegmentResidual(const reco::MuonChamberMat
   }
 
   m_residual = trk->x - seg->x;
-  m_residual_error = sqrt(pow(trk->xErr, 2) + pow(seg->xErr, 2));
+  m_residual_error = sqrt(trk->xErr2 + seg->xErr2);
   m_resslope = trk->dXdZ - seg->dXdZ;
-  m_resslope_error = sqrt(pow(trk->dXdZErr, 2) + pow(seg->dXdZErr, 2));
+  m_resslope_error = sqrt(trk->dXdZErr2 + seg->dXdZErr2);
 
   m_trackx = trk->x;
   m_tracky = trk->y;

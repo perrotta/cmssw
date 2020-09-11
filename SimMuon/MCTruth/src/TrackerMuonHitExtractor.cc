@@ -50,17 +50,17 @@ void TrackerMuonHitExtractor::init(const edm::Event &iEvent, const edm::EventSet
     float segmentY = segmentLocalPosition.y();
     float segmentdXdZ = segmentLocalDirection.x() / segmentLocalDirection.z();
     float segmentdYdZ = segmentLocalDirection.y() / segmentLocalDirection.z();
-    float segmentXerr = sqrt(segmentLocalPositionError.xx());
-    float segmentYerr = sqrt(segmentLocalPositionError.yy());
-    float segmentdXdZerr = sqrt(segmentLocalDirectionError.xx());
-    float segmentdYdZerr = sqrt(segmentLocalDirectionError.yy());
+    float segmentXerr2 = segmentLocalPositionError.xx();
+    float segmentYerr2 = segmentLocalPositionError.yy();
+    float segmentdXdZerr2 = segmentLocalDirectionError.xx();
+    float segmentdYdZerr2 = segmentLocalDirectionError.yy();
 
     edm::LogVerbatim("TrackerMuonHitExtractor")
         << "\nDT segment index :" << index_dt_segment << "\nchamber Wh:" << wheel << ",St:" << station
-        << ",Se:" << sector << "\nLocal Position (X,Y)=(" << segmentX << "," << segmentY << ") +/- (" << segmentXerr
-        << "," << segmentYerr << "), "
-        << "Local Direction (dXdZ,dYdZ)=(" << segmentdXdZ << "," << segmentdYdZ << ") +/- (" << segmentdXdZerr << ","
-        << segmentdYdZerr << ")";
+        << ",Se:" << sector << "\nLocal Position (X,Y)=(" << segmentX << "," << segmentY << ") +/- ("
+        << sqrt(segmentXerr2) << "," << sqrt(segmentYerr2) << "), "
+        << "Local Direction (dXdZ,dYdZ)=(" << segmentdXdZ << "," << segmentdYdZ << ") +/- (" << sqrt(segmentdXdZerr2)
+        << "," << sqrt(segmentdYdZerr2) << ")";
   }
 
   edm::LogVerbatim("TrackerMuonHitExtractor") << "\nThere are " << cscSegmentCollectionH_->size() << " CSC segments.";
@@ -84,17 +84,17 @@ void TrackerMuonHitExtractor::init(const edm::Event &iEvent, const edm::EventSet
     float segmentY = segmentLocalPosition.y();
     float segmentdXdZ = segmentLocalDirection.x() / segmentLocalDirection.z();
     float segmentdYdZ = segmentLocalDirection.y() / segmentLocalDirection.z();
-    float segmentXerr = sqrt(segmentLocalPositionError.xx());
-    float segmentYerr = sqrt(segmentLocalPositionError.yy());
-    float segmentdXdZerr = sqrt(segmentLocalDirectionError.xx());
-    float segmentdYdZerr = sqrt(segmentLocalDirectionError.yy());
+    float segmentXerr2 = segmentLocalPositionError.xx();
+    float segmentYerr2 = segmentLocalPositionError.yy();
+    float segmentdXdZerr2 = segmentLocalDirectionError.xx();
+    float segmentdYdZerr2 = segmentLocalDirectionError.yy();
 
     edm::LogVerbatim("TrackerMuonHitExtractor")
         << "\nCSC segment index :" << index_csc_segment << "\nchamber Endcap:" << endcap << ",St:" << station
         << ",Ri:" << ring << ",Ch:" << chamber << "\nLocal Position (X,Y)=(" << segmentX << "," << segmentY << ") +/- ("
-        << segmentXerr << "," << segmentYerr << "), "
-        << "Local Direction (dXdZ,dYdZ)=(" << segmentdXdZ << "," << segmentdYdZ << ") +/- (" << segmentdXdZerr << ","
-        << segmentdYdZerr << ")";
+        << sqrt(segmentXerr2) << "," << sqrt(segmentYerr2) << "), "
+        << "Local Direction (dXdZ,dYdZ)=(" << segmentdXdZ << "," << segmentdYdZ << ") +/- (" << sqrt(segmentdXdZerr2)
+        << "," << sqrt(segmentdYdZerr2) << ")";
   }
 }
 std::vector<const TrackingRecHit *> TrackerMuonHitExtractor::getMuonHits(const reco::Muon &mu) const {
@@ -147,10 +147,10 @@ std::vector<const TrackingRecHit *> TrackerMuonHitExtractor::getMuonHits(const r
       float segmentY = segmentMatch->y;
       float segmentdXdZ = segmentMatch->dXdZ;
       float segmentdYdZ = segmentMatch->dYdZ;
-      float segmentXerr = segmentMatch->xErr;
-      float segmentYerr = segmentMatch->yErr;
-      float segmentdXdZerr = segmentMatch->dXdZErr;
-      float segmentdYdZerr = segmentMatch->dYdZErr;
+      float segmentXerr2 = segmentMatch->xErr2;
+      float segmentYerr2 = segmentMatch->yErr2;
+      float segmentdXdZerr2 = segmentMatch->dXdZErr2;
+      float segmentdYdZerr2 = segmentMatch->dYdZErr2;
 
       CSCSegmentRef segmentCSC = segmentMatch->cscSegmentRef;
       DTRecSegment4DRef segmentDT = segmentMatch->dtSegmentRef;
@@ -165,9 +165,9 @@ std::vector<const TrackingRecHit *> TrackerMuonHitExtractor::getMuonHits(const r
       if (subdet == MuonSubdetId::DT) {
         edm::LogVerbatim("TrackerMuonHitExtractor")
             << "\n\t segment index: " << index_segment << ARBITRATED << "\n\t  Local Position (X,Y)=(" << segmentX
-            << "," << segmentY << ") +/- (" << segmentXerr << "," << segmentYerr << "), "
-            << "\n\t  Local Direction (dXdZ,dYdZ)=(" << segmentdXdZ << "," << segmentdYdZ << ") +/- (" << segmentdXdZerr
-            << "," << segmentdYdZerr << ")";
+            << "," << segmentY << ") +/- (" << sqrt(segmentXerr2) << "," << sqrt(segmentYerr2) << "), "
+            << "\n\t  Local Direction (dXdZ,dYdZ)=(" << segmentdXdZ << "," << segmentdYdZ << ") +/- ("
+            << sqrt(segmentdXdZerr2) << "," << sqrt(segmentdYdZerr2) << ")";
 
         // with the following line the DT segments failing standard arbitration
         // are skipped
@@ -204,9 +204,9 @@ std::vector<const TrackingRecHit *> TrackerMuonHitExtractor::getMuonHits(const r
       else if (subdet == MuonSubdetId::CSC) {
         edm::LogVerbatim("TrackerMuonHitExtractor")
             << "\n\t segment index: " << index_segment << ARBITRATED << "\n\t  Local Position (X,Y)=(" << segmentX
-            << "," << segmentY << ") +/- (" << segmentXerr << "," << segmentYerr << "), "
-            << "\n\t  Local Direction (dXdZ,dYdZ)=(" << segmentdXdZ << "," << segmentdYdZ << ") +/- (" << segmentdXdZerr
-            << "," << segmentdYdZerr << ")";
+            << "," << segmentY << ") +/- (" << sqrt(segmentXerr2) << "," << sqrt(segmentYerr2) << "), "
+            << "\n\t  Local Direction (dXdZ,dYdZ)=(" << segmentdXdZ << "," << segmentdYdZ << ") +/- ("
+            << sqrt(segmentdXdZerr2) << "," << sqrt(segmentdYdZerr2) << ")";
 
         // with the following line the CSC segments failing standard arbitration
         // are skipped

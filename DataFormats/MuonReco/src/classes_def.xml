@@ -58,15 +58,17 @@ initial version number of a class which has never been stored before.
   <class name="reco::HcalMuonRecHit" ClassVersion="3">
    <version ClassVersion="3" checksum="2031556424"/>
   </class>
-  <class name="reco::MuonChamberMatch" ClassVersion="13">
+  <class name="reco::MuonChamberMatch" ClassVersion="14">
+   <version ClassVersion="14" checksum="3767242221"/>
    <version ClassVersion="13" checksum="2674954213"/>
    <version ClassVersion="12" checksum="2575855272"/>
    <version ClassVersion="11" checksum="541727491"/>
    <version ClassVersion="10" checksum="4050071853"/>
   </class>
-  <class name="reco::MuonSegmentMatch" ClassVersion="11">
-    <version ClassVersion="11" checksum="2861296960"/>
-    <version ClassVersion="10" checksum="754193003"/>    
+  <class name="reco::MuonSegmentMatch" ClassVersion="12">
+   <version ClassVersion="12" checksum="3103596232"/>
+   <version ClassVersion="11" checksum="2861296960"/>
+   <version ClassVersion="10" checksum="754193003"/>    
   </class>
   <class name="reco::MuonRPCHitMatch" ClassVersion="10">
    <version ClassVersion="10" checksum="4193465224"/>

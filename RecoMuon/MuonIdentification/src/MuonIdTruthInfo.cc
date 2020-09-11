@@ -136,12 +136,12 @@ void MuonIdTruthInfo::checkSimHitForBestMatch(reco::MuonSegmentMatch& segmentMat
         // find a SimHit closer to the reference surface, update segmentMatch
         segmentMatch.x = projection.x();
         segmentMatch.y = projection.y();
-        segmentMatch.xErr = 0;
-        segmentMatch.yErr = 0;
+        segmentMatch.xErr2 = 0;
+        segmentMatch.yErr2 = 0;
         segmentMatch.dXdZ = direction.x() / direction.z();
         segmentMatch.dYdZ = direction.y() / direction.z();
-        segmentMatch.dXdZErr = 0;
-        segmentMatch.dYdZErr = 0;
+        segmentMatch.dXdZErr2 = 0;
+        segmentMatch.dYdZErr2 = 0;
         distance = new_distance;
         LogTrace("MuonIdentificationVerbose")
             << "Better truth matched segment found:\n"
@@ -153,9 +153,9 @@ void MuonIdTruthInfo::checkSimHitForBestMatch(reco::MuonSegmentMatch& segmentMat
     }
   } else {
     if (!chamberGeometry)
-      edm::LogWarning("MuonIdentification") << "Cannot get chamber geomtry for DetId: " << chamberId.rawId();
+      edm::LogWarning("MuonIdentification") << "Cannot get chamber geometry for DetId: " << chamberId.rawId();
     if (!simUnitGeometry)
-      edm::LogWarning("MuonIdentification") << "Cannot get detector unit geomtry for DetId: " << hit.detUnitId();
+      edm::LogWarning("MuonIdentification") << "Cannot get detector unit geometry for DetId: " << hit.detUnitId();
   }
 }
 
