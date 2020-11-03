@@ -641,6 +641,7 @@ bool muon::isGoodMuon(const reco::Muon& muon,
 
         if ((dX < maxAbsDx or dX * dX < maxAbsPullX2 * invPullX2) and
             (dY < maxAbsDy or dY * dY < maxAbsPullY2 * invPullY2)) {
+          ++nMatch;
           break;
         }
       }
@@ -799,8 +800,8 @@ bool muon::overlap(
   unsigned int nMatches1 = muon1.numberOfMatches(reco::Muon::SegmentAndTrackArbitration);
   unsigned int nMatches2 = muon2.numberOfMatches(reco::Muon::SegmentAndTrackArbitration);
   unsigned int betterMuon = (muon1.pt() > muon2.pt() ? 1 : 2);
-  float pullX2 = pullX * pullX;
-  float pullY2 = pullY * pullY;
+  const float pullX2 = pullX * pullX;
+  const float pullY2 = pullY * pullY;
   for (std::vector<reco::MuonChamberMatch>::const_iterator chamber1 = muon1.matches().begin();
        chamber1 != muon1.matches().end();
        ++chamber1)

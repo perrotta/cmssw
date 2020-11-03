@@ -280,7 +280,7 @@ unsigned int Muon::stationGapMaskDistance(float distanceCut) const {
 }
 
 unsigned int Muon::stationGapMaskPull(float sigmaCut) const {
-  float sigmaCut2 = sigmaCut * sigmaCut;
+  const float sigmaCut2 = sigmaCut * sigmaCut;
   unsigned int totMask(0);
   for (auto& chamberMatch : muMatches_) {
     unsigned int curMask(0);
@@ -291,16 +291,16 @@ unsigned int Muon::stationGapMaskPull(float sigmaCut) const {
     if (stationIndex < 1 || stationIndex >= 5)
       continue;
 
-    float edgeX = chamberMatch.edgeX;
-    float edgeY = chamberMatch.edgeY;
-    float xErr2 = chamberMatch.xErr2 + 0.000001;  // protect against division by zero later
-    float yErr2 = chamberMatch.yErr2 + 0.000001;  // protect against division by zero later
-    if (edgeX < 0 && edgeX*edgeX > sigmaCut2 * xErr2 && 
-	edgeY < 0 && edgeY*edgeY > sigmaCut2 * yErr2)  // inside the chamber so negates all gaps for this station
+    const float edgeX = chamberMatch.edgeX;
+    const float edgeY = chamberMatch.edgeY;
+    const float xErr2 = chamberMatch.xErr2 + 0.000001;  // protect against division by zero later
+    const float yErr2 = chamberMatch.yErr2 + 0.000001;  // protect against division by zero later
+    if (edgeX < 0 && edgeX * edgeX > sigmaCut2 * xErr2 && edgeY < 0 &&
+        edgeY * edgeY > sigmaCut2 * yErr2)  // inside the chamber so negates all gaps for this station
       continue;
-    
-    if (( edgeX*edgeX < sigmaCut2 * xErr2 && edgeY < std::sqrt(sigmaCut2 * yErr2)) ||
-	( edgeY*edgeY < sigmaCut2 * yErr2 && edgeX < std::sqrt(sigmaCut2 * xErr2))    )  // inside gap
+
+    if ((edgeX * edgeX < sigmaCut2 * xErr2 && edgeY < std::sqrt(sigmaCut2 * yErr2)) ||
+        (edgeY * edgeY < sigmaCut2 * yErr2 && edgeX < std::sqrt(sigmaCut2 * xErr2)))  // inside gap
       curMask = 1 << ((stationIndex - 1) + 4 * (detectorIndex - 1));
 
     totMask += curMask;  // add to total mask
