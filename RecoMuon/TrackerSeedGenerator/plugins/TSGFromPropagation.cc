@@ -26,6 +26,7 @@
 #include "RecoMuon/TrackingTools/interface/MuonServiceProxy.h"
 #include "RecoMuon/TrackingTools/interface/MuonErrorMatrix.h"
 #include "RecoMuon/TrackerSeedGenerator/interface/TrackerSeedGenerator.h"
+#include "RecoMuon/TrackerSeedGenerator/interface/TrackerSeedGeneratorFactory.h"
 #include "RecoTracker/MeasurementDet/interface/MeasurementTracker.h"
 #include "RecoTracker/MeasurementDet/interface/MeasurementTrackerEvent.h"
 #include "RecoTracker/Record/interface/TrackerRecoGeometryRecord.h"
@@ -496,3 +497,6 @@ void TSGFromPropagation::adjust(TrajectoryStateOnSurface& state) const {
   state =
       TrajectoryStateOnSurface(state.weight(), state.globalParameters(), oMat, state.surface(), state.surfaceSide());
 }
+
+#include "FWCore/Framework/interface/MakerMacros.h"
+DEFINE_EDM_PLUGIN(TrackerSeedGeneratorFactory, TSGFromPropagation, "TSGFromPropagation");

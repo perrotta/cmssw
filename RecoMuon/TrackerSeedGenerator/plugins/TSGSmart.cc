@@ -1,5 +1,6 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "RecoMuon/TrackerSeedGenerator/interface/TrackerSeedGenerator.h"
+#include "RecoMuon/TrackerSeedGenerator/interface/TrackerSeedGeneratorFactory.h"
 #include "RecoTracker/TkTrackingRegions/interface/TrackingRegion.h"
 #include "RecoTracker/TkTrackingRegions/interface/OrderedHitsGeneratorFactory.h"
 #include "RecoTracker/TkTrackingRegions/interface/OrderedHitsGenerator.h"
@@ -77,3 +78,7 @@ void TSGSmart::run(TrajectorySeedCollection &seeds,
       thePairGenerator->run(seeds, region, ev, es);
   }
 }
+
+
+#include "FWCore/Framework/interface/MakerMacros.h"
+DEFINE_EDM_PLUGIN(TrackerSeedGeneratorFactory, TSGSmart, "TSGSmart");

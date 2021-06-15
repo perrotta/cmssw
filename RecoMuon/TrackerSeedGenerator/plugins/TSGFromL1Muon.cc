@@ -6,6 +6,8 @@
 */
 
 #include "FWCore/Framework/interface/stream/EDProducer.h"
+#include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/PluginManager/interface/ModuleDef.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/L1Trigger/interface/L1MuonParticle.h"
 #include "DataFormats/L1Trigger/interface/L1MuonParticleFwd.h"
@@ -153,3 +155,5 @@ void TSGFromL1Muon::produce(edm::Event& ev, const edm::EventSetup& es) {
   LogDebug("TSGFromL1Muon") << result->size() << " seeds to the event.";
   ev.put(std::move(result));
 }
+
+DEFINE_FWK_MODULE(TSGFromL1Muon);

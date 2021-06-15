@@ -26,6 +26,7 @@
 #include "Geometry/CommonDetUnit/interface/GlobalTrackingGeometry.h"
 #include "MagneticField/Engine/interface/MagneticField.h"
 #include "RecoMuon/TrackerSeedGenerator/interface/TrackerSeedGenerator.h"
+#include "RecoMuon/TrackerSeedGenerator/interface/TrackerSeedGeneratorFactory.h"
 #include "RecoMuon/TrackingTools/interface/MuonErrorMatrix.h"
 #include "RecoMuon/TrackingTools/interface/MuonServiceProxy.h"
 #include "RecoTracker/MeasurementDet/interface/MeasurementTracker.h"
@@ -647,3 +648,7 @@ void TSGForRoadSearch::pushTrajectorySeed(const reco::Track &muon,
   }
   return;
 }
+
+
+#include "FWCore/Framework/interface/MakerMacros.h"
+DEFINE_EDM_PLUGIN(TrackerSeedGeneratorFactory, TSGForRoadSearch, "TSGForRoadSearch");
