@@ -1,4 +1,18 @@
-#include "TSGFromL1Muon.h"
+
+/** \class TSGFromL1Muon
+ * Description: 
+ * EDPRoducer to generate L3MuonTracjectorySeed from L1MuonParticles
+ * \author Marcin Konecki
+*/
+
+#include "FWCore/Framework/interface/stream/EDProducer.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "DataFormats/L1Trigger/interface/L1MuonParticle.h"
+#include "DataFormats/L1Trigger/interface/L1MuonParticleFwd.h"
+#include "DataFormats/TrajectorySeed/interface/TrajectorySeedCollection.h"
+#include "DataFormats/MuonSeed/interface/L3MuonTrajectorySeedCollection.h"
+#include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/TrackReco/interface/TrackFwd.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
@@ -8,26 +22,35 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Framework/interface/ConsumesCollector.h"
 
+#include "RecoPixelVertexing/PixelTrackFitting/interface/PixelTrackFilter.h"
 #include "RecoTracker/TkTrackingRegions/interface/OrderedHitsGeneratorFactory.h"
 #include "RecoTracker/TkTrackingRegions/interface/OrderedHitsGenerator.h"
-
+#include "RecoTracker/TkSeedGenerator/interface/SeedFromProtoTrack.h"
 #include "RecoMuon/TrackerSeedGenerator/interface/L1MuonPixelTrackFitter.h"
 #include "RecoMuon/TrackerSeedGenerator/interface/L1MuonSeedsMerger.h"
-
 #include "RecoMuon/TrackerSeedGenerator/interface/L1MuonRegionProducer.h"
-
-#include "RecoPixelVertexing/PixelTrackFitting/interface/PixelTrackFilter.h"
-
-#include "DataFormats/TrackReco/interface/Track.h"
-#include "DataFormats/TrackReco/interface/TrackFwd.h"
-
-#include "RecoTracker/TkSeedGenerator/interface/SeedFromProtoTrack.h"
-#include "DataFormats/TrajectorySeed/interface/TrajectorySeedCollection.h"
 
 #include <vector>
 
-#include "DataFormats/TrajectorySeed/interface/TrajectorySeedCollection.h"
-#include "DataFormats/MuonSeed/interface/L3MuonTrajectorySeedCollection.h"
+
+class TSGFromL1Muon : public edm::stream::EDProducer<> {
+public:
+  TSGFromL1Muon(const edm::ParameterSet& cfg);
+  ~TSGFromL1Muon() override;
+  void produce(edm::Event& ev, const edm::EventSetup& es) override;
+
+private:
+  edm::ParameterSet theConfig;
+  edm::InputTag theSourceTag;
+  edm::EDGetTokenT<l1extra::L1MuonParticleCollection> theSourceToken;
+  edm::EDGetTokenT<PixelTrackFilter> theFilterToken;
+
+  std::unique_ptr<L1MuonRegionProducer> theRegionProducer;
+  std::unique_ptr<OrderedHitsGenerator> theHitGenerator;
+  std::unique_ptr<L1MuonPixelTrackFitter> theFitter;
+  std::unique_ptr<L1MuonSeedsMerger> theMerger;
+};
+
 
 using namespace reco;
 using namespace l1extra;

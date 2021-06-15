@@ -1,10 +1,32 @@
-#include "RecoMuon/TrackerSeedGenerator/plugins/TSGSmart.h"
-
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "RecoMuon/TrackerSeedGenerator/interface/TrackerSeedGenerator.h"
 #include "RecoTracker/TkTrackingRegions/interface/TrackingRegion.h"
 #include "RecoTracker/TkTrackingRegions/interface/OrderedHitsGeneratorFactory.h"
 #include "RecoTracker/TkTrackingRegions/interface/OrderedHitsGenerator.h"
 #include "RecoTracker/TkSeedGenerator/interface/SeedGeneratorFromRegionHits.h"
 #include "RecoTracker/TkSeedGenerator/interface/SeedCreatorFactory.h"
+
+class TSGSmart : public TrackerSeedGenerator {
+public:
+  TSGSmart(const edm::ParameterSet &pset, edm::ConsumesCollector &iC);
+
+  ~TSGSmart() override;
+
+private:
+  void run(TrajectorySeedCollection &seeds,
+           const edm::Event &ev,
+           const edm::EventSetup &es,
+           const TrackingRegion &region) override;
+
+private:
+  edm::ParameterSet theConfig;
+  std::unique_ptr<SeedGeneratorFromRegionHits> thePairGenerator;
+  std::unique_ptr<SeedGeneratorFromRegionHits> theTripletGenerator;
+  std::unique_ptr<SeedGeneratorFromRegionHits> theMixedGenerator;
+
+  double theEtaBound;
+};
+
 
 TSGSmart::TSGSmart(const edm::ParameterSet &pset, edm::ConsumesCollector &iC) {
   theEtaBound = pset.getParameter<double>("EtaBound");
