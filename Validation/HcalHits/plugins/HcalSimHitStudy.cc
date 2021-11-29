@@ -18,6 +18,7 @@
 #include "SimDataFormats/CaloHit/interface/PCaloHit.h"
 #include "SimDataFormats/CaloHit/interface/PCaloHitContainer.h"
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -296,35 +297,16 @@ void HcalSimHitStudy::analyzeHits(std::vector<PCaloHit> &hits) {
   double HOEneMap[ieta_bins_HO][iphi_bins];
   double HFEneMap[ieta_bins_HF][iphi_bins];
 
+  std::fill(&HBEneMap[0][0], &HBEneMap[ieta_bins_HB - 1][iphi_bins - 1], 0.);
+  std::fill(&HEEneMap[0][0], &HEEneMap[ieta_bins_HE - 1][iphi_bins - 1], 0.);
+  std::fill(&HOEneMap[0][0], &HOEneMap[ieta_bins_HO - 1][iphi_bins - 1], 0.);
+  std::fill(&HFEneMap[0][0], &HFEneMap[ieta_bins_HF - 1][iphi_bins - 1], 0.);
+
   // Works in ieta_min_Hx is < 0
   int eta_offset_HB = -(int)ieta_min_HB;
   int eta_offset_HE = -(int)ieta_min_HE;
   int eta_offset_HO = -(int)ieta_min_HO;
   int eta_offset_HF = -(int)ieta_min_HF;
-
-  for (int i = 0; i < ieta_bins_HB; i++) {
-    for (int j = 0; j < iphi_bins; j++) {
-      HBEneMap[i][j] = 0.;
-    }
-  }
-
-  for (int i = 0; i < ieta_bins_HE; i++) {
-    for (int j = 0; j < iphi_bins; j++) {
-      HEEneMap[i][j] = 0.;
-    }
-  }
-
-  for (int i = 0; i < ieta_bins_HO; i++) {
-    for (int j = 0; j < iphi_bins; j++) {
-      HOEneMap[i][j] = 0.;
-    }
-  }
-
-  for (int i = 0; i < ieta_bins_HF; i++) {
-    for (int j = 0; j < iphi_bins; j++) {
-      HFEneMap[i][j] = 0.;
-    }
-  }
 
   for (int i = 0; i < nHit; i++) {
     double energy = hits[i].energy();
