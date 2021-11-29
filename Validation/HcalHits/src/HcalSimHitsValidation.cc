@@ -45,24 +45,23 @@ void HcalSimHitsValidation::bookHistograms(DQMStore::IBooker &ib, edm::Run const
   // Get Phi segmentation from geometry, use the max phi number so that all iphi
   // values are included.
 
-  int NphiMax = hcons_->getNPhi(0);
-
-  NphiMax = (hcons_->getNPhi(1) > NphiMax ? hcons_->getNPhi(1) : NphiMax);
-  NphiMax = (hcons_->getNPhi(2) > NphiMax ? hcons_->getNPhi(2) : NphiMax);
-  NphiMax = (hcons_->getNPhi(3) > NphiMax ? hcons_->getNPhi(3) : NphiMax);
+  //  int NphiMax = hcons_->getNPhi(0);
+  //  NphiMax = (hcons_->getNPhi(1) > NphiMax ? hcons_->getNPhi(1) : NphiMax);
+  //  NphiMax = (hcons_->getNPhi(2) > NphiMax ? hcons_->getNPhi(2) : NphiMax);
+  //  NphiMax = (hcons_->getNPhi(3) > NphiMax ? hcons_->getNPhi(3) : NphiMax);
 
   // Center the iphi bins on the integers
   // float iphi_min = 0.5;
   // float iphi_max = NphiMax + 0.5;
   // int iphi_bins = (int) (iphi_max - iphi_min);
 
+  // Retain classic behavior, all plots have same ieta range.
+  // Comment out	code to	allow each subdetector to have its own range
+
   int iEtaHBMax = hcons_->getEtaRange(0).second;
   int iEtaHEMax = std::max(hcons_->getEtaRange(1).second, 1);
   int iEtaHFMax = hcons_->getEtaRange(2).second;
   int iEtaHOMax = hcons_->getEtaRange(3).second;
-
-  // Retain classic behavior, all plots have same ieta range.
-  // Comment out	code to	allow each subdetector to have its on range
 
   int iEtaMax = (iEtaHBMax > iEtaHEMax ? iEtaHBMax : iEtaHEMax);
   iEtaMax = (iEtaMax > iEtaHFMax ? iEtaMax : iEtaHFMax);
