@@ -1,30 +1,32 @@
 #include "CondTools/Ecal/interface/EcalTimeCalibHandler.h"
+#include "DataFormats/EcalDetId/interface/EEDetId.h"
+#include "DataFormats/EcalDetId/interface/EBDetId.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
+
 
 const Int_t kEBChannels = 61200, kEEChannels = 14648;
 
 popcon::EcalTimeCalibHandler::EcalTimeCalibHandler(const edm::ParameterSet& ps)
-    : m_name(ps.getUntrackedParameter<std::string>("name", "EcalTimeCalibHandler")) {
+  : m_name(ps.getUntrackedParameter<std::string>("name", "EcalTimeCalibHandler")),
+    m_firstRun(static_cast<unsigned int>(atoi(ps.getParameter<std::string>("firstRun").c_str()))),
+    m_file_name(ps.getParameter<std::string>("fileName")),
+    m_file_type(ps.getParameter<std::string>("type"))  // xml/txt
+{
   edm::LogInfo("EcalTimeCalib Source handler constructor\n");
-  m_firstRun = static_cast<unsigned int>(atoi(ps.getParameter<std::string>("firstRun").c_str()));
-  m_file_type = ps.getParameter<std::string>("type");  // xml/txt
-  m_file_name = ps.getParameter<std::string>("fileName");
 }
-
-popcon::EcalTimeCalibHandler::~EcalTimeCalibHandler() {}
 
 void popcon::EcalTimeCalibHandler::getNewObjects() {
   std::ostringstream ss;
   ss << "ECAL ";
 
-  std::string file_ = m_file_name;
-  edm::LogInfo("going to open file ") << file_;
+  edm::LogInfo("going to open file ") << m_file_name;
 
   //      EcalCondHeader   header;
   EcalTimeCalibConstants* payload = new EcalTimeCalibConstants;
   if (m_file_type == "xml")
-    readXML(file_, *payload);
+    readXML(m_file_name, *payload);
   else
-    readTXT(file_, *payload);
+    readTXT(m_file_name, *payload);
   Time_t snc = (Time_t)m_firstRun;
 
   popcon::PopConSourceHandler<EcalTimeCalibConstants>::m_to_transfer.push_back(std::make_pair(payload, snc));
